@@ -1,4 +1,11 @@
 <div ng-app="app">
-        <h1> Dem Homeworks</h1>
-    <div ui-view> </div>
+    <h1> Dem Homeworks</h1>
+    <nav>
+		<section>
+			<a href="#" ui-sref-active="active" ui-sref="home"><span>Home</span></a>
+			<a href="#" ui-sref-active="active" ui-sref="login"><span>Login</span></a>
+			<a href="#" ui-sref-active="active" ui-sref="register"><span>Register</span></a>
+		</section>
+	</nav>
+	<main ui-view></main>
 </div>

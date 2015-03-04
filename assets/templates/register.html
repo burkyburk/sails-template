@@ -1,15 +1,15 @@
-<section ng-controller="registerCtrl">
-	<header>
-		<h2> Registration </h2>
-	</header>
-	<form ng-submit="loginSubmit(username, userpassword)">
-		<input ng-change="emailChanged(username)" ng-model="username" type="text" placeholder="Enter Username">
-		<input ng-change="passwordChanged(userpassword)" ng-model="userpassword" type="Password" placeholder="Password">
-		<button> Sign Up </button>
+<section class="user-form">
+	<div class="avatar"></div>
+	<h2>Register</h2>
+	<form class="form" ng-submit="register(credentials)" novalidate>
+		<label ng-class="error.identifier ? 'error' : ''">
+			<input type="text" placeholder="Email" ng-model="credentials.identifier">
+			<p class="error" ng-bind="error.identifier"></p>
+		</label>
+		<label ng-class="error.password ? 'error' : ''">
+			<input type="password" placeholder="Password" ng-model="credentials.password">
+			<p class="error" ng-bind="error.password"></p>
+		</label>
+		<button type="submit">Register</button>
 	</form>
-	<span ng-show="emailErrorMsg">Email address is invalid.</span>
-	<span ng-show="passwordErrorMsg">Password is invalid.</span>
-	<div>
-		<a ui-sref="login">Already Registered? Log In! </a>
-	</div>
 </section>

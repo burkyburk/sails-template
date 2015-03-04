@@ -1,1 +1,15 @@
-login
+<section ng-controller="loginCtrl">
+	<header>
+		<h2> Login </h2>
+	</header>
+	<form ng-submit="loginSubmit(username, userpassword)">
+		<input ng-change="emailChanged(username)" ng-model="username" type="text" placeholder="Enter Username">
+		<input ng-change="passwordChanged(userpassword)" ng-model="userpassword" type="Password" placeholder="Password">
+		<button> Log In </button>
+	</form>
+    <span ng-show="emailErrorMsg">Email address is invalid.</span>
+	<span ng-show="passwordErrorMsg">Password is invalid.</span>
+	<div>
+		<a ui-sref="register"> Sign Up!</a>
+	</div>
+</section>

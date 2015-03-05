@@ -1,45 +1,73 @@
 angular.module('app.controllers', ['app.services'])
-.controller('HomeCtrl', function($scope) {
+.controller('homeCtrl', function($scope) {
 
 })
-.controller('RegisterCtrl', function($scope, Validate) {
-	$scope.error = {
-		identifier: '',
-		password: ''
-	};
-	$scope.credentials = {
-		identifier: '',
-		password: ''
-	};
+.controller('loginCtrl', function($scope, $http, $state, validateService, objectLog, errorMessageSort) {
 
-	$scope.register = function(credentials) {
-		$scope.error = Validate.credentials(credentials);
-
-		if(!Validate.hasError($scope.error)) {
-			var registerObj = {
-				username: credentials.identifier,
-				email: credentials.identifier,
-				password: credentials.password
+	$scope.loginSubmit = function(username, password) {
+		$scope.validateFunc = validateService(username, password);
+		$scope.emailErrorMsg = $scope.validateFunc.errorObject.email;
+		$scope.passwordErrorMsg = $scope.validateFunc.errorObject.password;
+		$scope.logObject = objectLog($scope.validateFunc);
+		if($scope.validateFunc.loginTracker.success) {
+			var htmlCredentials = {
+				identifier: $scope.validateFunc.loginTracker.identifier,
+				password: $scope.validateFunc.loginTracker.password
 			};
-			console.log(registerObj);
+			$http.post('/auth/local', htmlCredentials)
+			.success(function(res) {
+				if(res.errors.length > 0) {
+					$scope.loginErrorArray = errorMessageSort(res.errors[0]);
+				}
+				if(res.success) {
+					$state.go('dashboard');
+				}
+			})
+			.error(function(err) {
+				console.log('Error!');
+				console.log(err);
+			});
 		}
 	};
 })
-.controller('LoginCtrl', function($scope, Validate) {
-	$scope.error = {
-		identifier: '',
-		password: ''
-	};
-	$scope.credentials = {
-		identifier: '',
-		password: ''
-	};
+.controller('registerCtrl', function($scope, $http, $state, validateService, objectLog, errorMessageSort) {
 
-	$scope.login = function(credentials) {
-		$scope.error = Validate.credentials(credentials);
-
-		if(!Validate.hasError($scope.error)) {
-			console.log(credentials);
+	$scope.loginSubmit = function(username, password) {
+		$scope.validateFunc = validateService(username, password);
+		$scope.emailErrorMsg = $scope.validateFunc.errorObject.email;
+		$scope.passwordErrorMsg = $scope.validateFunc.errorObject.password;
+		$scope.logObject = objectLog($scope.validateFunc);
+		if($scope.validateFunc.loginTracker.success) {
+			var registerObj = {
+				username: $scope.validateFunc.loginTracker.username,
+				email: $scope.validateFunc.loginTracker.username,
+				password: $scope.validateFunc.loginTracker.password
+			};
+			$http.post('/auth/local/register', registerObj)
+			.success(function(res) {
+				if(res.errors.length > 0) {
+					$scope.loginErrorArray = errorMessageSort(res.errors[0]);
+				}
+				if(res.success) {
+					$state.go('dashboard');
+				}
+			})
+			.error(function(err) {
+				console.log('Error!');
+				console.log(err);
+			});
 		}
+	};
+})
+.controller('dashboardCtrl', function() {
+
+})
+.controller('assignmentCtrl', function($scope, verify) {
+	$scope.assignmentSubmit = function(assignment) {
+		console.log('Submit clicked');
+		console.log($scope.assignment);
+
+		var object = verify($scope.assignment);
+		console.log(object);
 	};
 });

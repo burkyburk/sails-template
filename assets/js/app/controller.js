@@ -1,56 +1,39 @@
 angular.module('app.controllers', ['app.services'])
-.controller('homeCtrl', function($scope) {
+.controller('HomeCtrl', function($scope) {
 
 })
-.controller('loginCtrl', function($scope, $http, $state, validateService, objectLog, errorMessageSort) {
-
-	$scope.loginSubmit = function(username, password) {
-		$scope.validateFunc = validateService(username, password);
-		$scope.emailErrorMsg = $scope.validateFunc.errorObject.email;
-		$scope.passwordErrorMsg = $scope.validateFunc.errorObject.password;
-		$scope.logObject = objectLog($scope.validateFunc);
-		if($scope.validateFunc.loginTracker.success) {
-			var htmlCredentials = {
-				identifier: $scope.validateFunc.loginTracker.identifier,
-				password: $scope.validateFunc.loginTracker.password
-			};
-			$http.post('/auth/local', htmlCredentials)
-			.success(function(res) {
-				if(res.errors.length > 0) {
-					$scope.loginErrorArray = errorMessageSort(res.errors[0]);
-				}
-				if(res.success) {
-					$state.go('dashboard');
-				}
-			})
-			.error(function(err) {
-				console.log('Error!');
-				console.log(err);
-			});
-		}
+.controller('RegisterCtrl', function($scope, $http, $state, Validate) {
+	$scope.error = {
+		identifier: '',
+		password: '',
+		generic: []
 	};
-})
-.controller('registerCtrl', function($scope, $http, $state, validateService, objectLog, errorMessageSort) {
+	$scope.credentials = {
+		identifier: '',
+		password: ''
+	};
 
-	$scope.loginSubmit = function(username, password) {
-		$scope.validateFunc = validateService(username, password);
-		$scope.emailErrorMsg = $scope.validateFunc.errorObject.email;
-		$scope.passwordErrorMsg = $scope.validateFunc.errorObject.password;
-		$scope.logObject = objectLog($scope.validateFunc);
-		if($scope.validateFunc.loginTracker.success) {
+	$scope.register = function(credentials) {
+		$scope.error = Validate.credentials(credentials);
+
+		if(!Validate.hasError($scope.error)) {
 			var registerObj = {
-				username: $scope.validateFunc.loginTracker.username,
-				email: $scope.validateFunc.loginTracker.username,
-				password: $scope.validateFunc.loginTracker.password
+				username: credentials.identifier,
+				email: credentials.identifier,
+				password: credentials.password
 			};
 			$http.post('/auth/local/register', registerObj)
 			.success(function(res) {
-				if(res.errors.length > 0) {
-					$scope.loginErrorArray = errorMessageSort(res.errors[0]);
-				}
+				console.log('Success!');
+				console.log(res);
+
 				if(res.success) {
-					$state.go('dashboard');
+					$state.go('home');
 				}
+				else {
+					$scope.error.generic = res.errors;
+				}
+				console.log($scope.error);
 			})
 			.error(function(err) {
 				console.log('Error!');
@@ -59,15 +42,91 @@ angular.module('app.controllers', ['app.services'])
 		}
 	};
 })
-.controller('dashboardCtrl', function() {
-
-})
-.controller('assignmentCtrl', function($scope, verify) {
-	$scope.assignmentSubmit = function(assignment) {
-		console.log('Submit clicked');
-		console.log($scope.assignment);
-
-		var object = verify($scope.assignment);
-		console.log(object);
+.controller('LoginCtrl', function($scope, $http, $state, Validate) {
+	$scope.error = {
+		identifier: '',
+		password: '',
+		generic: []
 	};
+	$scope.credentials = {
+		identifier: 'jacobdouglasburkhart@gmail.com',
+		password: ''
+	};
+
+	console.log($scope.credentials);
+
+	$scope.login = function(htmlCredentials) {
+		$scope.error = Validate.credentials(htmlCredentials);
+
+		if(!Validate.hasError($scope.error)) {
+			$http.post('/auth/local', htmlCredentials)
+			.success(function(res) {
+				console.log('Success!');
+				console.log(res);
+
+				if(res.success) {
+					$state.go('home');
+				}
+				else {
+					$scope.error.generic = res.errors;
+				}
+				console.log($scope.error);
+			})
+			.error(function(err) {
+				console.log('Error!');
+				console.log(err);
+			});
+		}
+	};
+})
+.controller('AssignmentCtrl', function($scope, $http, Validate) {
+	$scope.error = {
+		name: '',
+		url: '',
+		dueDate: '',
+		dueTime: '',
+		generic: []
+	};
+	$scope.assignment = {
+		name: '',
+		url: '',
+		dueDate: moment().add(1, 'day').toDate(),
+		dueTime: new Date(1970, 0, 1, 22, 0, 0)
+	};
+
+	$scope.create = function(assignment) {
+		$scope.error = Validate.assignment(assignment);
+
+		if(!Validate.hasError($scope.error)) {
+			var dueAt = moment(assignment.dueDate);
+			dueAt.hour(assignment.dueTime.getHours());
+			dueAt.minute(assignment.dueTime.getMinutes());
+			dueAt.second(assignment.dueTime.getSeconds());
+			var data = {
+				name: assignment.name,
+				url: assignment.url,
+				dueAt: dueAt.format('YYYY-MM-DD HH:mm:ss')
+			};
+			data.dueAt = moment().format();
+
+			$http.post('/assignment', data)
+			.success(function(newAssignment) {
+				console.log(newAssignment);
+			})
+			.error(function(err) {
+				console.log(err);
+			});
+			console.log(data);
+		}
+	};
+})
+.controller('DashboardCtrl', function($scope, $http) {
+	$http.get('/assignment?sort=id DESC')
+	.success(function(assignments) {
+
+	})
+	.error(function(err) {
+		console.log('err');
+		console.log(err);
+	});
 });

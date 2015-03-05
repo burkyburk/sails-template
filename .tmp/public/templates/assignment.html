@@ -1,24 +1,26 @@
-<section ng-controller="assignmentCtrl">
-	<header>
-		<h2> Assignments</h2>
-	</header>
-	<form ng-submit="assignmentSubmit(assignment)">
-		<div>
-			<input ng-model="assignment.name" type="text" placeholder="Please enter the name of the assignment">
-		</div>
-		<div>
-			<input ng-model="assignment.dueAt" type="datetime-local" placeholder="Date Assignment is Due">
-		</div>
-		<div>
-			<input ng-model="assignment.url" type="text" placeholder="URL of Assignment">
-		</div>
-		<div>
-			<button> Sign Up </button>
-		</div>
+<section class="form assignment">
+	<h2>Add Assignment</h2>
+	<form class="form" ng-submit="create(assignment)">
+		<label ng-class="error.name ? 'error' : ''">
+			<div class="label required">Name</div>
+			<input type="text" placeholder="Enter the assignment name" ng-model="assignment.name">
+			<p class="error" ng-bind="error.name" ng-show="error.name"></p>
+		</label>
+		<label ng-class="error.url ? 'error' : ''">
+			<div class="label required">URL</div>
+			<input type="text" placeholder="Enter the assignment URL" ng-model="assignment.url">
+			<p class="error" ng-bind="error.url" ng-show="error.url"></p>
+		</label>
+		<label ng-class="error.dueDate ? 'error' : ''">
+			<div class="label required">Due Date</div>
+			<input type="date" ng-model="assignment.dueDate">
+			<p class="error" ng-bind="error.dueDate" ng-show="error.dueDate"></p>
+		</label>
+		<label ng-class="error.dueTime ? 'error' : ''">
+			<div class="label required">Time</div>
+			<input type="time" ng-model="assignment.dueTime" step="60">
+			<p class="error" ng-bind="error.dueTime" ng-show="error.dueTime"></p>
+		</label>
+		<button type="submit" class="btn">Create Assignment</button>
 	</form>
-	<span ng-show="emailErrorMsg"> That is not a valid email </span>
-	<span ng-show="passwordErrorMsg"> That is not a valid password </span>
-	<div>
-		<a ui-sref="login"> Back to the Log In Page! </a>
-	</div>
 </section>
